@@ -116,18 +116,48 @@ const DoneFrame = (props) => {
   );
 }
 
+class Timmer extends Component {
+  state = {
+    countDown: 60
+  }
+
+  playTime = (countDown) => new Date(0, 0, 0, 0, 0, countDown).toLocaleTimeString();
+
+  componentDidMount(){
+    const trigger = setInterval(() => {
+      if(this.state.countDown === 0){
+        clearInterval(trigger);
+        this.props.timeUp();
+      } else {
+        this.setState((prevState) => ({
+          countDown: prevState.countDown - 1
+        }));
+      }
+    }, 1000);
+  }
+
+  render() {
+    return(
+      <div>
+        Timmer: { this.playTime(this.state.countDown) }
+      </div>
+    );
+  }
+}
 
 
 class Game extends Component {
   static randomNumber = () => 1 + Math.floor(Math.random()*9);
-
+  
   static initialState = () => ({
     selectedNumbers: [],
     numberOfStars : Game.randomNumber(),
     usedNumbers: [],
     answerIsCorrect: null,
     redraws: 5,
-    doneStatus: null
+    doneStatus: null,
+    countDown:  null,
+    timeUp: false
   });
 
   state = Game.initialState();
@@ -183,6 +213,13 @@ class Game extends Component {
       return possibleCombinationSum(possibleNumbers, numberOfStars);
   };
 
+  timeUp = () => {
+    this.setState({
+      timeUp: true
+    });
+    this.updateDoneStatus();
+  }
+
   updateDoneStatus = () => {
     this.setState(prevState => {
       if (prevState.usedNumbers.length === 9){
@@ -190,6 +227,9 @@ class Game extends Component {
       }
       if (prevState.redraws === 0 && !this.possibleSolutions(prevState)){
         return { doneStatus: 'Game Over!'}
+      }
+      if(prevState.timeUp){
+        return { doneStatus: 'Time Up!'}
       }
     });
   }
@@ -206,7 +246,13 @@ class Game extends Component {
 
     return (
       <div className="container">
-        <h3>Play Nine</h3>
+        <div className="row">
+        <div className="col-8">
+          <h3>Play Nine</h3>
+        </div>
+        <Timmer timeUp={this.timeUp} />
+        </div>      
+        
         <hr />
         <div className="row">
           <Stars numberOfStars={numberOfStars} />
