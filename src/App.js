@@ -123,7 +123,14 @@ class Timmer extends Component {
 
   playTime = (countDown) => new Date(0, 0, 0, 0, 0, countDown).toLocaleTimeString();
 
-  componentDidMount(){
+  resetTimmer = () => {
+    this.setState({
+      countDown: 60
+    });
+    this.triggerTimmer();
+  }
+
+  triggerTimmer = () => {
     const trigger = setInterval(() => {
       if(this.state.countDown === 0){
         clearInterval(trigger);
@@ -134,6 +141,10 @@ class Timmer extends Component {
         }));
       }
     }, 1000);
+  }
+
+  componentDidMount(){
+    this.triggerTimmer();
   }
 
   render() {
@@ -162,7 +173,9 @@ class Game extends Component {
 
   state = Game.initialState();
 
-  resetGame = () => this.setState(Game.initialState());
+  resetGame = () => {
+    this.setState(Game.initialState());
+  }
 
   selectNumber = (clickedNumber) => {
     if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) { return}
