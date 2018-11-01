@@ -116,36 +116,50 @@ const DoneFrame = (props) => {
   );
 }
 
+/* const resetTimmer = (countDown) => {
+  this.setState({ countDown });
+} */
+
+function resetTimmer (countDown) {
+  this.setState({ countDown });
+  this.triggerTimmer();
+}
+
+function stopTimmer(){
+  clearInterval(this.trigger);
+}
+
 class Timmer extends Component {
-  state = {
-    countDown: 60
+  constructor(props){
+    super(props)
+    this.state = {
+      countDown: 60
+    }
+    this.triggerTimmer();
+    resetTimmer = resetTimmer.bind(this);
+    stopTimmer = stopTimmer.bind(this);
   }
+
+  trigger = null;
 
   playTime = (countDown) => new Date(0, 0, 0, 0, 0, countDown).toLocaleTimeString();
-
-  resetTimmer = () => {
-    this.setState({
-      countDown: 60
-    });
-    this.triggerTimmer();
-  }
+  
 
   triggerTimmer = () => {
-    const trigger = setInterval(() => {
-      if(this.state.countDown === 0){
-        clearInterval(trigger);
-        this.props.timeUp();
-      } else {
+    this.trigger = setInterval(() => {
+      if(this.state.countDown > 0) {
         this.setState((prevState) => ({
           countDown: prevState.countDown - 1
         }));
+      } else {
+        this.props.timeUp();
       }
     }, 1000);
   }
 
-  componentDidMount(){
+  /* componentDidMount(){
     this.triggerTimmer();
-  }
+  } */
 
   render() {
     return(
@@ -155,6 +169,7 @@ class Timmer extends Component {
     );
   }
 }
+
 
 
 class Game extends Component {
@@ -167,14 +182,22 @@ class Game extends Component {
     answerIsCorrect: null,
     redraws: 5,
     doneStatus: null,
-    countDown:  null,
     timeUp: false
   });
 
   state = Game.initialState();
 
+  resetTimmerComponent(countDown){
+    resetTimmer(countDown);
+  }
+
+  stopTimmerComponent(){
+    stopTimmer();
+  }
+
   resetGame = () => {
     this.setState(Game.initialState());
+    this.resetTimmerComponent(60);
   }
 
   selectNumber = (clickedNumber) => {
@@ -236,9 +259,12 @@ class Game extends Component {
   updateDoneStatus = () => {
     this.setState(prevState => {
       if (prevState.usedNumbers.length === 9){
+        this.stopTimmerComponent();
         return { doneStatus: 'Done. Nice!'}
       }
       if (prevState.redraws === 0 && !this.possibleSolutions(prevState)){
+        /* this.resetTimmerComponent(0); */
+        this.stopTimmerComponent();
         return { doneStatus: 'Game Over!'}
       }
       if(prevState.timeUp){
