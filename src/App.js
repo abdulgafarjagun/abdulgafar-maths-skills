@@ -116,10 +116,6 @@ const DoneFrame = (props) => {
   );
 }
 
-/* const resetTimmer = (countDown) => {
-  this.setState({ countDown });
-} */
-
 function resetTimmer (countDown) {
   this.setState({ countDown });
   this.triggerTimmer();
@@ -156,10 +152,6 @@ class Timmer extends Component {
       }
     }, 1000);
   }
-
-  /* componentDidMount(){
-    this.triggerTimmer();
-  } */
 
   render() {
     return(
@@ -263,7 +255,6 @@ class Game extends Component {
         return { doneStatus: 'Done. Nice!'}
       }
       if (prevState.redraws === 0 && !this.possibleSolutions(prevState)){
-        /* this.resetTimmerComponent(0); */
         this.stopTimmerComponent();
         return { doneStatus: 'Game Over!'}
       }
