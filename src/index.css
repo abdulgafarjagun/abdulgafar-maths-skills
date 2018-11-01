@@ -31,7 +31,7 @@ span {
 .selected {
   background-color: #eee;
   color: #ddd;
-
+  cursor: not-allowed;
 }
 
 .used {
